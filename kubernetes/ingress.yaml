@@ -9,3 +9,12 @@ spec:
   backend:
     serviceName: nginx-service
     servicePort: nginx-http
+
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /hello
+        backend:
+          serviceName: hello-app
+          servicePort: 8080

@@ -10,9 +10,6 @@ dir = $(shell pwd)
 # admin_dir := $(dir)/functions/src/admin
 # env_dir := $(dir)/env
 
-#Add in admin node modules executable
-PATH := $(admin_dir)/node_modules/.bin:$(PATH)
-
 ##
 # Admin Tools
 ## 
@@ -46,47 +43,6 @@ PATH := $(admin_dir)/node_modules/.bin:$(PATH)
 # 	make switch stage="production"
 
 
-##
-# Local Development
-##
-
-build:
-	cd $(dir)/functions; yarn run build
-	# cp $(dir)/functions/src/index.js $(dir)/functions/lib/index.js
-
-lint: 
-	cd $(dir)/functions; yarn run lint
-
-run-lt: 
-	@make env
-	@lt --subdomain ${LT_SUBDOMAIN} --port 5000
-
-run-local:
-	@make env
-	./_run_local.sh
-
-run-swagger-ui:
-	@make env
-	open "http://localhost:8000/docs/client_swagger_local.html"
-	python -m SimpleHTTPServer 
-
-#update the local swagger without changing the base path or other params
-update-local-swagger:
-	cat swagger.local_head.yaml > swagger.local.yaml
-	tail +19 swagger.yaml >> swagger.local.yaml
-
-##
-# Tests
-##
-# test-unit:
-# 	source ${env_dir}/env.unit.sh && \
-# 		cd ${dir}/functions && \
-# 		yarn run unit
-
-# test-service:
-# 	source ${env_dir}/env.unit.sh && \
-# 		cd ${dir}/functions && \
-# 		yarn run service
 
 ##
 # Deployment
@@ -98,29 +54,70 @@ deploy-infra-apply:
 	@cd ./terraform && terraform apply
 
 deploy-infra-destroy:
-	@cd ../terraform && terraform destroy
+	@cd ./terraform && terraform destroy
 
-deploy-kube:
-	@echo 'TODO: Deploy kubenetes changes"
-	cd ../kubernetes/ && kubectl apply -f deployment.yaml
-	cd ../kubernetes/ && kubectl apply -f service.yaml
-	cd ../kubernetes/ && kubectl apply -f ingress.yaml
+deploy-kube:	
+	#get the currently running clusters
+	gcloud container clusters list
+	gcloud container clusters get-credentials moja-box-cluster
+
+	#init helm
+	helm init
+
+	#Fix up permissions for helm to work
+	make helm-fix-permissions
+	kubectl -n kube-system get pod | grep tiller
+
+	@echo 'Installing Mojaloop'
+	helm repo add mojaloop http://mojaloop.io/helm/repo/
+	helm install --debug --namespace=mojaloop --name=dev --repo=http://mojaloop.io/helm/repo mojaloop
+	helm repo update
+
+	@echo installing Nginx
+	helm --namespace=mojaloop install stable/nginx-ingress --name=nginx
+	#don't think this is needed...
+	#kubectl apply -f ./kubernetes/ingress-resource.yaml
+
+	@make print-hosts-settings
+
+	@echo installing Kubernetes dasboard
+	helm install stable/kubernetes-dashboard \
+		--namespace kube-dash \
+		--name kube-dash \
+  	--set rbac.clusterAdminRole=true,enableSkipLogin=true,enableInsecureLogin=true
 
 
-# deploy:
-# 	# @make env lint build
-# 	firebase functions:config:set \
-# 		config.verbose_log=${VERBOSE_LOG} \
-# 		config.api_key=${API_KEY} \
-# 		config.bucket_name=${BUCKET_NAME} \
-# 		config.project_id=${PROJECT_ID}
+deploy:
+	make deploy-infra-apply
+	make deploy-kube
 
-# 	firebase deploy --only functions
+##
+# Misc
+## 
+helm-fix-permissions:
+	@helm list || echo 'command failed'
 
-# deploy-public:
-# 	# @make env lint build test-unit test-service
-# 	@make env
-# 	firebase deploy --only hosting
+	#Give helm the necessary permissions to install stuff on the cluster
+	kubectl -n kube-system delete serviceAccounts tiller || echo 'nothing to delete'
+	kubectl -n kube-system delete clusterrolebindings tiller-cluster-rule || echo 'nothing to delete'
+	kubectl create serviceaccount --namespace kube-system tiller
+	kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+
+	#patch the permissions
+	kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+	helm init --service-account tiller --upgrade
+	sleep 5
+
+	helm list || echo 'helm list failed. May not be fatal'
+
+
+print-hosts-settings:
+	@echo "Make sure your /etc/hosts contains the following:\n"
+	@echo '  <cluster_ip>	interop-switch.local central-kms.local forensic-logging-sidecar.local central-ledger.local central-end-user-registry.local central-directory.local central-hub.local central-settlement.local ml-api-adapter.local'
+
+proxy-kube-dash:
+	@echo "Go to: http://localhost:8002/api/v1/namespaces/kube-dash/services/kube-dash-kubernetes-dashboard:http/proxy/"
+	@kubectl proxy --port 8002
 
 
 .PHONY: switch switch-dev swich-prod env
