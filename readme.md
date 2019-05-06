@@ -33,3 +33,21 @@ gcloud config set compute/zone asia-southeast1
 brew install terraform
 brew install kubernetes-cli
 ```
+
+
+### Terraform commands
+
+cp ./secrets.auto.tfvars.example ./secrets.auto.tfvars
+
+Init terraform
+
+```bash
+cd ./terraform
+terraform init -get=true -get-plugins=true
+
+#make chagnes in ./terraform/variables.tf as needed
+
+#now see what will be changed
+terraform plan
+```
+
