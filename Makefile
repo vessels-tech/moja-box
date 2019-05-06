@@ -97,8 +97,14 @@ deploy-infra:
 deploy-infra-apply:
 	@cd ./terraform && terraform apply
 
+deploy-infra-destroy:
+	@cd ../terraform && terraform destroy
+
 deploy-kube:
 	@echo 'TODO: Deploy kubenetes changes"
+	cd ../kubernetes/ && kubectl apply -f deployment.yaml
+	cd ../kubernetes/ && kubectl apply -f service.yaml
+	cd ../kubernetes/ && kubectl apply -f ingress.yaml
 
 
 # deploy:
