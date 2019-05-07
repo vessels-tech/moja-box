@@ -120,4 +120,5 @@ getPositions() {
 ##
 createTransfer
 acceptTransfer
+sleep 5
 getPositions

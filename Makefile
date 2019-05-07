@@ -97,7 +97,7 @@ helm-fix-permissions:
 	#patch the permissions
 	kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
 	helm init --service-account tiller --upgrade
-	sleep 5
+	sleep 10
 
 	helm list || echo 'helm list failed. May not be fatal'
 
@@ -111,6 +111,7 @@ proxy-kube-dash:
 	@kubectl proxy --port 8002
 
 health-check:
+	@make env
 	curl -H Host:'central-directory.local' http://${CLUSTER_IP}/health
 
 
