@@ -66,12 +66,12 @@ config-all:
 
 config-set-up:
 	@make env
-	@./mojaloop/00_set_up_env.sh
+	@./mojaloop_config/00_set_up_env.sh
 	@echo 'Done!'
 
 config-create-dfsps:
 	@make env
-	@./mojaloop/01_create_dfsps.sh
+	@./mojaloop_config/01_create_dfsps.sh
 	@echo 'Done!'
 
 
