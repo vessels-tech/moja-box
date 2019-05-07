@@ -75,6 +75,12 @@ config-create-dfsps:
 	@echo 'Done!'
 
 
+##
+# Examples
+##
+example-create-transfer:
+	@./mojaloop_config/02_create_transfer.sh
+
 
 ##
 # Misc
