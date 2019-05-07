@@ -142,6 +142,148 @@ curl -H Host:'central-directory.local' http://35.247.170.113/health
 open http://central-directory.local/
 ```
 
+## Configure a Vanilla Mojaloop Deployment
+
+These were taken from the 'OSS New Deployment' Postman collection found [here](https://github.com/mojaloop/postman). I don't exactly know what they do, but after I ran through the first 5 steps, I could add participants (demo DFSPs) as needed.
+
+### Step 1: `Add Hub Account-HUB_MULTILATERAL_SETTLEMENT`
+
+```bash
+curl -X POST \
+  http://35.247.170.113/participants/Hub/accounts \
+  -H 'Authorization: Bearer {{BEARER_TOKEN}}' \
+  -H 'Content-Type: application/json' \
+  -H 'FSPIOP-Source: payerfsp' \
+  -H 'Host: central-ledger.local' \
+  -d '{
+  "type": "HUB_MULTILATERAL_SETTLEMENT",
+  "currency": "AUD"
+}'
+```
+
+### Step 2: `Add Hub Account-HUB_RECONCILIATION`
+
+```bash
+curl -X POST \
+  http://35.247.170.113/participants/Hub/accounts \
+  -H 'Authorization: Bearer {{BEARER_TOKEN}}' \
+  -H 'Content-Type: application/json' \
+  -H 'FSPIOP-Source: payerfsp' \
+  -H 'Host: central-ledger.local' \
+  -d '{
+  "type": "HUB_RECONCILIATION",
+  "currency": "AUD"
+}'
+```
+
+### Step 3: `Hub Set Endpoint-SETTLEMENT_TRANSFER_POSITION_CHANGE_EMAIL`
+
+```bash
+curl -X POST \
+  http://35.247.170.113/participants/hub/endpoints \
+  -H 'Authorization: Bearer {{BEARER_TOKEN}}' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Host: central-ledger.local' \
+  -d '{
+  "type": "SETTLEMENT_TRANSFER_POSITION_CHANGE_EMAIL",
+  "value": "email@example.com"
+}'
+```
+
+
+### Step 4: `Hub Set Endpoint-NET_DEBIT_CAP_ADJUSTMENT_EMAIL`
+
+```bash
+curl -X POST \
+  http://35.247.170.113/participants/hub/endpoints \
+  -H 'Authorization: Bearer {{BEARER_TOKEN}}' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Host: central-ledger.local' \
+  -d '{
+  "type": "NET_DEBIT_CAP_ADJUSTMENT_EMAIL",
+  "value": "email@example.com"
+}'
+```
+
+
+### Step 5: ``
+
+```bash
+curl -X POST \
+  http://35.247.170.113/participants/Hub/endpoints \
+  -H 'Authorization: Bearer {{BEARER_TOKEN}}' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Host: central-ledger.local' \
+  -d '{
+  "type": "NET_DEBIT_CAP_THRESHOLD_BREACH_EMAIL",
+  "value": "email@example.com"
+}'
+```
+
+
+### Step 6: `Create Test FSPs`
+
+```bash
+curl -X POST \
+  http://35.247.170.113/participants \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Host: central-ledger.local' \
+  -d '{
+    "name": "payerfsp",
+	"currency":"AUD"
+}'
+
+
+curl -X POST \
+  http://35.247.170.113/participants/payerfsp/initialPositionAndLimits \
+  -H 'Content-Type: application/json' \
+  -H 'Host: central-ledger.local' \
+  -d '{
+    "currency": "AUD",
+    "limit": {
+    	"type": "NET_DEBIT_CAP",
+    	"value": 1000
+    },
+    "initialPosition": 0
+  }'
+
+
+curl -X POST \
+  http://35.247.170.113/participants \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Host: central-ledger.local' \
+  -d '{
+    "name": "payeefsp",
+	"currency":"AUD"
+}'
+
+
+curl -X POST \
+  http://35.247.170.113/participants/payeefsp/initialPositionAndLimits \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Host: central-ledger.local' \
+  -d '{
+    "currency": "AUD",
+    "limit": {
+    	"type": "NET_DEBIT_CAP",
+    	"value": 1000
+    },
+    "initialPosition": 0
+  }'
+
+
+```
+
+
+
+
+
 
 ## Tearing down a deployment
 

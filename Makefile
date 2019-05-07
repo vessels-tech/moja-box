@@ -1,5 +1,15 @@
 PROJECT = "MOJA-BOX"
 dir = $(shell pwd)
+include ./config/.compiled_env
+env_dir := $(dir)/config
+
+
+##
+# Env
+##
+
+env:
+	cat ${env_dir}/mojaloop.public.sh ${env_dir}/mojaloop.private.sh > ${env_dir}/.compiled_env
 
 
 ##
@@ -43,9 +53,28 @@ deploy-kube:
   	--set rbac.clusterAdminRole=true,enableSkipLogin=true,enableInsecureLogin=true
 
 
+
 deploy:
 	make deploy-infra-apply
 	make deploy-kube
+
+##
+# Configuration
+##
+config-all:
+	@make config-set-up config-create-dfsps
+
+config-set-up:
+	@make env
+	@./mojaloop/00_set_up_env.sh
+	@echo 'Done!'
+
+config-create-dfsps:
+	@make env
+	@./mojaloop/01_create_dfsps.sh
+	@echo 'Done!'
+
+
 
 ##
 # Misc
@@ -69,11 +98,15 @@ helm-fix-permissions:
 
 print-hosts-settings:
 	@echo "Make sure your /etc/hosts contains the following:\n"
-	@echo '  <cluster_ip>	interop-switch.local central-kms.local forensic-logging-sidecar.local central-ledger.local central-end-user-registry.local central-directory.local central-hub.local central-settlement.local ml-api-adapter.local'
+	@echo '  ${CLUSTER_IP}	interop-switch.local central-kms.local forensic-logging-sidecar.local central-ledger.local central-end-user-registry.local central-directory.local central-hub.local central-settlement.local ml-api-adapter.local'
 
 proxy-kube-dash:
 	@echo "Go to: http://localhost:8002/api/v1/namespaces/kube-dash/services/kube-dash-kubernetes-dashboard:http/proxy/"
 	@kubectl proxy --port 8002
+
+health-check:
+	curl -H Host:'central-directory.local' http://${CLUSTER_IP}/health
+
 
 
 .PHONY: switch switch-dev swich-prod env
