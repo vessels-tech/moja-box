@@ -1,47 +1,5 @@
-
-PATH := node_modules/.bin:$(PATH)
-
 PROJECT = "MOJA-BOX"
 dir = $(shell pwd)
-# include .config
-# include ./env/env_compiled
-
-
-# admin_dir := $(dir)/functions/src/admin
-# env_dir := $(dir)/env
-
-##
-# Admin Tools
-## 
-
-# admin-deploy-audio:
-# 	@echo ${admin_dir}
-# 	cd ${admin_dir} && gulp deploy_audio
-
-# admin-deploy-config:
-# 	@echo ${admin_dir}
-# 	cd ${admin_dir} && gulp deploy_config
-
-
-##
-# Env Setup
-## 
-
-# env:
-# 	cat ${env_dir}/public.${stage}.sh ${env_dir}/private.${stage}.sh > ${env_dir}/env_compiled
-
-# switch:
-# 	@echo switching to stage: ${stage}
-# 	@echo 'export stage=${stage}\n' > .config
-# 	@make env
-# 	@firebase use ${stage}
-
-# switch-dev:
-# 	make switch stage="development"
-
-# switch-prod:
-# 	make switch stage="production"
-
 
 
 ##
