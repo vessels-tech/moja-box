@@ -75,8 +75,6 @@ deploy-kube:
 
 	@echo installing Nginx
 	helm --namespace=mojaloop install stable/nginx-ingress --name=nginx
-	#don't think this is needed...
-	#kubectl apply -f ./kubernetes/ingress-resource.yaml
 
 	@make print-hosts-settings
 

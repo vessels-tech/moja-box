@@ -2,6 +2,8 @@
 
 ## Local Config
 
+### GCP
+
 Create a new project in GCP, and download the service.json file
 
 Ref: https://github.com/daaain/terraform-kubernetes-on-gcp/blob/master/docs/gcp.md
