@@ -114,6 +114,9 @@ health-check:
 	@make env
 	curl -H Host:'central-directory.local' http://${CLUSTER_IP}/health
 
+print-ip:
+	@cd ./terraform && terraform output |  grep loadbalancer | awk 'BEGIN { FS = " = " }; { print $$2 }'
+
 
 
 .PHONY: switch switch-dev swich-prod env
