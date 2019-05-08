@@ -15,6 +15,48 @@ HOST_CENTRAL_DIRECTORY     central-directory.local
 HOST_MOJALOOP              interop-switch.local
 HOST_ML_API                ml-api-adapter.local
 
+
+Others?
+
+chart-example.local
+central-ledger-admin-transfer.local
+central-ledger.local
+central-ledger-transfer-prepare.local
+central-ledger-transfer-position.local
+central-ledger-transfer-fulfil.local
+central-ledger-timeout.local
+central-directory.local
+central-end-user-registry.local
+email-notifier.local
+central-kms.local
+interop-switch.local
+ml-api-adapter.local
+ml-api-adapter-notification.local
+cluster.local
+central-settlement.local
+forensic-logging-sidecar.local
+central-ledger-transfer-get.local
+mock-pathfinder.local
+central-event-processor.local
+
+
+Ingress:
+dev-centraldirectory                         central-directory.local                 35.240.237.242  80     143m
+dev-centraleventprocessor                    central-event-processor.local           35.240.237.242  80     143m
+dev-centralledger-handler-admin-transfer     central-ledger-admin-transfer.local     35.240.237.242  80     143m
+dev-centralledger-handler-timeout            central-ledger-timeout.local            35.240.237.242  80     143m
+dev-centralledger-handler-transfer-fulfil    central-ledger-transfer-fulfil.local    35.240.237.242  80     143m
+dev-centralledger-handler-transfer-get       central-ledger-transfer-get.local       35.240.237.242  80     143m
+dev-centralledger-handler-transfer-position  central-ledger-transfer-position.local  35.240.237.242  80     143m
+dev-centralledger-handler-transfer-prepare   central-ledger-transfer-prepare.local   35.240.237.242  80     143m
+dev-centralledger-service                    central-ledger.local                    35.240.237.242  80     143m
+dev-centralkms                               central-kms.local                       35.240.237.242  80     143m
+dev-centralsettlement                        central-settlement.local                35.240.237.242  80     143m
+dev-emailnotifier                            email-notifier.local                    35.240.237.242  80     143m
+dev-interop-switch                           interop-switch.local                    35.240.237.242  80     143m
+dev-ml-api-adapter-handler-notification      ml-api-adapter-notification.local       35.240.237.242  80     143m
+dev-ml-api-adapter-service                   ml-api-adapter.local                    35.240.237.242  80     143m
+
 ```
 
 ## Get positions:
@@ -88,3 +130,21 @@ curl -X POST \
 ```
 
 This was solved by running the scripts in `./mojaloop_config/00_set_up_env.sh`
+
+
+
+### Trying to get to interop-switch
+
+Using the Host header doesn't seem to work
+
+```
+curl -H Host:'interop-switch.local' http://35.247.170.113/health
+curl -H Host:'interop-switch.local' http://35.247.170.113/interop/switch/v1/
+curl -H Host:'interop-switch.local' http://35.247.170.113/interop/switch/v1/health
+```
+
+I've also tried proxying:
+
+`http://localhost:8002/api/v1/namespaces/mojaloop/services/dev-interop-switch/proxy`
+
+We don't know enough about how the mojaloop proxying thing works.

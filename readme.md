@@ -304,6 +304,12 @@ terraform destroy
 
 
 
+## Install the Simulator Helm Chart
+
+```bash
+helm install --debug --namespace mojaloop-simulator mojaloop/simulator
+```
+
 
 
 
@@ -331,6 +337,8 @@ helm delete --purge kube-dash
 kubectl delete deployment tiller-deploy --namespace kube-system
 
 ```
+
+
 
 
 
