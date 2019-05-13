@@ -139,12 +139,21 @@ Using the Host header doesn't seem to work
 
 ```
 curl -H Host:'interop-switch.local' http://35.247.170.113/health
-curl -H Host:'interop-switch.local' http://35.247.170.113/interop/switch/v1/
-curl -H Host:'interop-switch.local' http://35.247.170.113/interop/switch/v1/health
+curl -H Host:'interop-switch.local' http://35.247.170.113/interop/switch/v1
 ```
+
+When we hit `/interop/switch/v1` we do manage to get past the Nginx backend,but get the error: `{ "message": "Resource not found" }`
+which appears to be from the interop switch service
 
 I've also tried proxying:
 
 `http://localhost:8002/api/v1/namespaces/mojaloop/services/dev-interop-switch/proxy`
 
 We don't know enough about how the mojaloop proxying thing works.
+
+
+Found the docs endpoints:
+http://localhost:8088/switch/v1/documentation/index.html
+http://localhost:8088/switch/v1/documentation/interop-switch.yaml
+
+With `/etc/hosts` setup:

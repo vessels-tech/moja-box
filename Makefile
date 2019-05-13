@@ -36,13 +36,19 @@ deploy-kube:
 	make helm-fix-permissions
 	kubectl -n kube-system get pod | grep tiller
 
+	@echo 'Not deploying-moja - make sure to set up CLUSTER_IP manually'
+
+	make deploy-moja
+
+deploy-moja:
 	@echo 'Installing Mojaloop'
 	helm repo add mojaloop http://mojaloop.io/helm/repo/
 	helm install --debug --namespace=mojaloop --name=dev --repo=http://mojaloop.io/helm/repo mojaloop
 	helm repo update
 
 	@echo installing Nginx
-	helm --namespace=mojaloop install stable/nginx-ingress --name=nginx
+	helm --namespace=mojaloop install stable/nginx-ingress --name=nginx \
+		--set controller.service.loadBalancerIP="${CLUSTER_IP}"
 
 	@make print-hosts-settings
 
@@ -51,7 +57,6 @@ deploy-kube:
 		--namespace kube-dash \
 		--name kube-dash \
   	--set rbac.clusterAdminRole=true,enableSkipLogin=true,enableInsecureLogin=true
-
 
 
 deploy:
@@ -115,7 +120,14 @@ health-check:
 	curl -H Host:'central-directory.local' http://${CLUSTER_IP}/health
 
 print-ip:
+	echo 'Warning! This is the cluster endpoint, and not the loadbalancer endpoint!'
 	@cd ./terraform && terraform output |  grep loadbalancer | awk 'BEGIN { FS = " = " }; { print $$2 }'
+
+print-endpoints:
+	@kubectl get ep -n mojaloop
+
+remove-helm:
+	helm reset --force
 
 
 
