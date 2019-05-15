@@ -4,6 +4,12 @@ provider "google" {
   region      = "${var.gcloud_region}"
 }
 
+provider "aws" {
+  region = "ap-southeast-2"
+  shared_credentials_file = "~/.aws/credentials"
+  profile = "vessels-lewis.daly"
+}
+
 module "network" {
   source = "./modules/network"
 
@@ -28,4 +34,12 @@ module "cluster" {
 
   cluster_master_auth_username = "${var.cluster_master_auth_username}"
   cluster_master_auth_password = "${var.cluster_master_auth_password}"
+}
+
+module "dns" {
+  source = "./modules/dns"
+
+  route_53_zone_id = "${var.route_53_zone_id}"
+  record_name = "${var.record_name}"
+  lb_public_ip = "${module.network.public_ip_address}"
 }

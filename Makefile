@@ -38,7 +38,7 @@ deploy-kube:
 
 	@echo 'Not deploying-moja - make sure to set up CLUSTER_IP manually'
 
-	make deploy-moja
+	
 
 deploy-moja:
 	@echo 'Installing Mojaloop'
@@ -62,6 +62,7 @@ deploy-moja:
 deploy:
 	make deploy-infra-apply
 	make deploy-kube
+	make deploy-moja
 
 ##
 # Configuration
