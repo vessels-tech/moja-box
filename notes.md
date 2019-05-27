@@ -157,3 +157,4 @@ http://localhost:8088/switch/v1/documentation/index.html
 http://localhost:8088/switch/v1/documentation/interop-switch.yaml
 
 With `/etc/hosts` setup:
+- seemed to work?
