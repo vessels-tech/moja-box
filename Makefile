@@ -15,11 +15,11 @@ env:
 ##
 # Deployment
 ##
-deploy-infra:
-	@cd terraform && terraform plan
+deploy-kube:
+	@cd ./terraform && terraform apply -target=module.cluster -target=module.network
 
-deploy-infra-apply:
-	@cd ./terraform && terraform apply
+deploy-dns:
+	@cd ./terraform && terraform apply -target=module.dns
 
 deploy-infra-destroy:
 	@cd ./terraform && terraform destroy
@@ -38,8 +38,6 @@ deploy-helm:
 
 	@echo 'Not deploying-moja - make sure to set up CLUSTER_IP manually'
 
-	
-
 deploy-moja:
 	@echo 'Installing Mojaloop'
 	helm repo add mojaloop http://mojaloop.io/helm/repo/
@@ -47,8 +45,7 @@ deploy-moja:
 	helm repo update
 
 	@echo installing Nginx
-	helm --namespace=mojaloop install stable/nginx-ingress --name=nginx \
-		--set controller.service.loadBalancerIP="${CLUSTER_IP}"
+	helm --namespace=mojaloop install stable/nginx-ingress --name=nginx
 
 	@make print-hosts-settings
 
@@ -60,9 +57,12 @@ deploy-moja:
 
 
 deploy:
-	make deploy-infra-apply
+	make deploy-kube
 	make deploy-helm
 	make deploy-moja
+	#Load balancer will be live now, we can set up the lb env var
+	@make config-set-lb-ip
+	make deploy-dns
 
 ##
 # Configuration
@@ -79,6 +79,11 @@ config-create-dfsps:
 	@make env
 	@./mojaloop_config/01_create_dfsps.sh
 	@echo 'Done!'
+
+# set the correct load balancer ip
+config-set-lb-ip:
+	TF_VAR_lb_public_ip=`make print-lb-ip` && sed -i "s/TF_VAR_lb_public_ip=.*$\/TF_VAR_lb_public_ip=${TF_VAR_lb_public_ip}/g" config/mojaloop.private.sh
+	@make env
 
 
 ##
@@ -127,9 +132,12 @@ print-ip:
 print-endpoints:
 	@kubectl get ep -n mojaloop
 
+print-lb-ip:
+	@gcloud compute forwarding-rules list | tail -1 | cut -f5 -d " "
+
+
 remove-helm:
 	helm reset --force
-
 
 
 .PHONY: switch switch-dev swich-prod env

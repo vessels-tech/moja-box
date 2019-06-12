@@ -41,5 +41,5 @@ module "dns" {
 
   route_53_zone_id = "${var.route_53_zone_id}"
   record_name = "${var.record_name}"
-  lb_public_ip = "${module.network.public_ip_address}"
+  lb_public_ip = "${var.lb_public_ip}"
 }
