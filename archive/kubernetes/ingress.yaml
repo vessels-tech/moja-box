@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: nginx-ingress
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: terraform-playground-address
+    kubernetes.io/ingress.global-static-ip-name: moja-box-cluster-address
     kubernetes.io/ingress.allow-http: "true"
 spec:
   backend:

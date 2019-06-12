@@ -47,7 +47,8 @@ deploy-moja:
 	helm repo update
 
 	@echo installing Nginx
-	helm --namespace=mojaloop install stable/nginx-ingress --name=nginx \
+	helm --namespace=mojaloop install stable/nginx-ingress --name=nginx
+	# helm --namespace=mojaloop install stable/nginx-ingress --name=nginx \
 		--set controller.service.loadBalancerIP="${CLUSTER_IP}"
 
 	@make print-hosts-settings
