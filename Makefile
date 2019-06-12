@@ -24,7 +24,7 @@ deploy-infra-apply:
 deploy-infra-destroy:
 	@cd ./terraform && terraform destroy
 
-deploy-kube:	
+deploy-helm:	
 	#get the currently running clusters
 	gcloud container clusters list
 	gcloud container clusters get-credentials moja-box-cluster
@@ -61,7 +61,7 @@ deploy-moja:
 
 deploy:
 	make deploy-infra-apply
-	make deploy-kube
+	make deploy-helm
 	make deploy-moja
 
 ##

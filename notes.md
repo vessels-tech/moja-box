@@ -158,3 +158,10 @@ http://localhost:8088/switch/v1/documentation/interop-switch.yaml
 
 With `/etc/hosts` setup:
 - seemed to work?
+
+
+
+## Setting up Cross Border Txs
+
+Following this guide: https://github.com/mojaloop/cross-network/blob/master/part2-johannesburg-april-2019/cross-currency-setup.md
+

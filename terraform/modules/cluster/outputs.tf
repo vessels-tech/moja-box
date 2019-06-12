@@ -13,3 +13,7 @@ output "client_key" {
 output "cluster_ca_certificate" {
   value = "${google_container_cluster.platform_name.master_auth.0.cluster_ca_certificate}"
 }
+
+# output "cluster_ip" {
+#   value = "${google_container_cluster.gcp_kubernetes.endpoint}"
+# }
