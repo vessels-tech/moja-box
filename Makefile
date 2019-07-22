@@ -48,7 +48,7 @@ deploy-helm:
 deploy-moja:
 	@echo 'Installing Mojaloop'
 	helm repo add mojaloop http://mojaloop.io/helm/repo/
-	helm install --debug --namespace=mojaloop --name=dev --repo=http://mojaloop.io/helm/repo mojaloop
+	helm install -f ./ingress.values.yml --debug --namespace=mojaloop --name=dev --repo=http://mojaloop.io/helm/repo mojaloop
 	helm repo update
 
 	@echo installing Nginx
@@ -62,9 +62,9 @@ deploy-moja:
 		--name kube-dash \
   	--set rbac.clusterAdminRole=true,enableSkipLogin=true,enableInsecureLogin=true
 
-deploy-vt-ingress:
-	#TODO: integrate this into the original thingo
-	helm upgrade  -f ./ingress.values.yml --repo http://mojaloop.io/helm/repo dev mojaloop
+# deploy-vt-ingress:
+	# TODO: integrate this into the original thingo
+	# helm upgrade -f ./ingress.values.yml --repo http://mojaloop.io/helm/repo dev mojaloop
 
 deploy:
 	make deploy-kube
@@ -96,14 +96,6 @@ config-create-dfsps:
 config-set-lb-ip:
 	@./config/_set_up_lb_ip.sh
 	@make env
-
-
-
-##
-# Apply values for helm that changes the LOG_LEVEL to debug
-##
-config-enable-debug:
-	helm upgrade -f ./debug.values.yml --repo http://mojaloop.io/helm/repo dev mojaloop
 
 
 ##

@@ -2,7 +2,8 @@ central:
   centralledger:
     centralledger-service:
       ingress:
-        # TODO: for some reason this isn't working...
+        # Ingress rules are hardcoded in helm for this chart
+        # ref: https://github.com/mojaloop/project/issues/870
         hosts:
           api_local: central-ledger.local
           admin_local: central-ledger.local
@@ -48,9 +49,9 @@ ml-api-adapter:
         api_local: ml-api-adapter.local
         api: ml-api-adapter.moja-box.vessels.tech
 
-# Omitting notification handler
+# note - Omitting ml-api-adapter notification handler
 
-#unavailable - not sure why
+#unavailable - not sure why, but it's not that important
 emailnotifier:
   ingress:
     hosts:
