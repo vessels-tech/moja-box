@@ -15,4 +15,4 @@ variable "cluster_node_initial_count" { default = 1 }
 
 variable "route_53_zone_id" { default = "Z1C4RYEBYQ49PR"}
 variable "record_name" { default = "*.moja-box.vessels.tech"}
-variable "lb_public_ip" { default = "68.183.247.27"}
+variable "lb_public_ip" { }

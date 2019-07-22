@@ -18,8 +18,15 @@ env:
 deploy-kube:
 	@cd ./terraform && terraform apply -target=module.cluster -target=module.network
 
+
+destroy-kube:
+	@cd ./terraform && terraform destroy -target=module.cluster -target=module.network
+
 deploy-dns:
 	@cd ./terraform && terraform apply -target=module.dns
+
+destroy-dns:
+	@cd ./terraform && terraform destroy -target=module.dns
 
 deploy-infra-destroy:
 	@cd ./terraform && terraform destroy
@@ -81,8 +88,10 @@ config-create-dfsps:
 	@echo 'Done!'
 
 # set the correct load balancer ip
+# we rely on a separate script as variable subs
+# in make are hard
 config-set-lb-ip:
-	TF_VAR_lb_public_ip=`make print-lb-ip` && sed -i "s/TF_VAR_lb_public_ip=.*$\/TF_VAR_lb_public_ip=${TF_VAR_lb_public_ip}/g" config/mojaloop.private.sh
+	@./config/_set_up_lb_ip.sh
 	@make env
 
 
