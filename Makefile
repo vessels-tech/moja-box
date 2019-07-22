@@ -62,6 +62,10 @@ deploy-moja:
 		--name kube-dash \
   	--set rbac.clusterAdminRole=true,enableSkipLogin=true,enableInsecureLogin=true
 
+deploy-vt-ingress:
+	#TODO: integrate this into the original thingo
+	helm upgrade -f ./ingress.values.yml --repo http://mojaloop.io/helm/repo dev mojaloop
+
 
 deploy:
 	make deploy-kube
@@ -132,7 +136,7 @@ proxy-kube-dash:
 
 health-check:
 	@make env
-	curl -H Host:'central-directory.local' http://${CLUSTER_IP}/health
+	curl -H Host:'central-ledger.local' http://${CLUSTER_IP}/health
 
 print-ip:
 	echo 'Warning! This is the cluster endpoint, and not the loadbalancer endpoint!'

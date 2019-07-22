@@ -1,0 +1,77 @@
+central:
+  centralledger:
+    centralledger-service:
+      ingress:
+        hosts:
+          api_local: central-ledger.local
+          admin_local: central-ledger.local
+          api: central-ledger.moja-box.vessels.tech
+          admin: central-ledger.moja-box.vessels.tech
+
+    # I don't think we should worry just now about all the handlers
+    centralledger-handler-transfer-prepare:
+      ingress:
+        hosts:
+          api_local: central-ledger-transfer-prepare.local
+          admin_local: central-ledger-transfer-prepare.local
+          api: central-ledger-transfer-prepare.moja-box.vessels.tech
+          admin: central-ledger-transfer-prepare.moja-box.vessels.tech
+  
+  #not working
+  forensicloggingsidecar:
+    ingress:
+      hosts:
+        api_local: forensicloggingsidecar.local
+        admin_local: forensicloggingsidecar.local
+        api: forensicloggingsidecar.moja-box.vessels.tech
+        admin: forensicloggingsidecar.moja-box.vessels.tech
+
+  #not working - internally, not on ingress
+  centralsettlement:
+    ingress:
+      hosts:
+        api_local: central-settlement.local
+        api: central-settlement.moja-box.vessels.tech
+
+#not working
+centraleventprocessor:
+  ingress:
+    hosts:
+      api_local: central-event-processor.local
+      api: central-event-processor.moja-box.vessels.tech
+
+ml-api-adapter:
+  ml-api-adapter-service:
+    ingress:
+      hosts:
+        api_local: ml-api-adapter.local
+        api: ml-api-adapter.moja-box.vessels.tech
+
+# Omitting notification handler
+
+#unavailable - not sure why
+emailnotifier:
+  ingress:
+    hosts:
+      api_local: email-notifier.local
+      api: email-notifier.moja-box.vessels.tech
+  
+account-lookup-service:
+  account-lookup-service:
+    ingress:
+      hosts:
+        - account-lookup-service.local
+        - account-lookup-service.moja-box.vessels.tech
+
+quoting-service:
+  ingress:
+    hosts:
+      api_local: quoting-service.local
+      api: quoting-service.moja-box.vessels.tech
+
+simulator:
+  ingress:
+    hosts:
+      - simulator.local
+      - simulator.moja-box.vessels.tech
+
