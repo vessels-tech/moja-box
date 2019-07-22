@@ -26,7 +26,6 @@ COMPLETED_TIMESTAMP=$(echo 'nowDate = new Date(); nowDate.setDate(nowDate.getDat
 PAYEE_FSP_ID="payeefsp"
 PAYER_FSP_ID="payerfsp"
 
-
 createTransfer() {
   echo $cyn"Creating the transfer (request from Payer -> Payee) $white"
 

@@ -2,6 +2,7 @@ central:
   centralledger:
     centralledger-service:
       ingress:
+        # TODO: for some reason this isn't working...
         hosts:
           api_local: central-ledger.local
           admin_local: central-ledger.local

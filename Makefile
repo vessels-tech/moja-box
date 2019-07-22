@@ -64,8 +64,7 @@ deploy-moja:
 
 deploy-vt-ingress:
 	#TODO: integrate this into the original thingo
-	helm upgrade -f ./ingress.values.yml --repo http://mojaloop.io/helm/repo dev mojaloop
-
+	helm upgrade  -f ./ingress.values.yml --repo http://mojaloop.io/helm/repo dev mojaloop
 
 deploy:
 	make deploy-kube
@@ -97,6 +96,14 @@ config-create-dfsps:
 config-set-lb-ip:
 	@./config/_set_up_lb_ip.sh
 	@make env
+
+
+
+##
+# Apply values for helm that changes the LOG_LEVEL to debug
+##
+config-enable-debug:
+	helm upgrade -f ./debug.values.yml --repo http://mojaloop.io/helm/repo dev mojaloop
 
 
 ##
