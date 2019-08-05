@@ -9,14 +9,10 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/../config/.compiled_env
 
 
-
-
 echo 'Step 1: `Add Hub Account-HUB_MULTILATERAL_SETTLEMENT`'
 
 curl -X POST \
-  http://${CLUSTER_IP}/participants/Hub/accounts \
-  -H 'Authorization: Bearer {{BEARER_TOKEN}}' \ 
-  -H 'Content-Type: application/json' \
+  http://${CLUSTER_IP}/participants/Hub/accounts -H 'Content-Type: application/json' \
   -H 'FSPIOP-Source: payerfsp' \
   -H 'Host: central-ledger.local' \
   -d '{

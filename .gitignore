@@ -1,2 +1,4 @@
 .stage_config
 deploy-*
+config-*
+helm-fix-permissions

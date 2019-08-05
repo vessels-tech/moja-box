@@ -1,6 +1,6 @@
 PROJECT = "MOJA-BOX"
 dir = $(shell pwd)
-# include .stage_config
+include .stage_config
 include ./config/.compiled_env
 env_dir := $(dir)/config
 
@@ -10,7 +10,7 @@ env_dir := $(dir)/config
 ##
 
 env:
-	cat ${env_dir}/${stage}.public.sh ${env_dir}/${stage}.private.sh > ${env_dir}/.compiled_env
+	@cat ${env_dir}/${stage}.public.sh ${env_dir}/${stage}.private.sh > ${env_dir}/.compiled_env
 
 switch:
 	@echo switching to stage: ${stage}
@@ -20,7 +20,7 @@ switch:
 switch-local:
 	make switch stage="local"
 	#This might not work here, but we can make sure that make doesn't complete steps
-	@touch deploy-kube deploy-dns config-set-lb-ip
+	@touch deploy-kube deploy-dns config-set-lb-ip helm-fix-permissions
 
 switch-gcp:
 	make switch stage="gcp"
@@ -31,6 +31,10 @@ switch-gcp:
 ##
 deploy-kube:
 	@cd ./terraform && terraform apply -target=module.cluster -target=module.network
+
+	#get the currently running clusters
+	gcloud container clusters list
+	gcloud container clusters get-credentials moja-box-cluster
 
 destroy-kube:
 	@cd ./terraform && terraform destroy -target=module.cluster -target=module.network
@@ -44,11 +48,7 @@ destroy-dns:
 deploy-infra-destroy:
 	@cd ./terraform && terraform destroy
 
-deploy-helm:	
-	#get the currently running clusters
-	gcloud container clusters list
-	gcloud container clusters get-credentials moja-box-cluster
-
+deploy-helm:
 	#init helm
 	helm init
 
@@ -56,7 +56,7 @@ deploy-helm:
 	make helm-fix-permissions
 	kubectl -n kube-system get pod | grep tiller
 
-	@echo 'Not deploying-moja - make sure to set up CLUSTER_IP manually'
+	@touch deploy-helm
 
 deploy-moja:
 	@echo 'Installing Mojaloop'
@@ -74,10 +74,15 @@ deploy-moja:
 		--namespace kube-dash \
 		--name kube-dash \
   	--set rbac.clusterAdminRole=true,enableSkipLogin=true,enableInsecureLogin=true
+	
+	@touch deploy-moja
 
-# deploy-vt-ingress:
-	# TODO: integrate this into the original thingo
-	# helm upgrade -f ./ingress.values.yml --repo http://mojaloop.io/helm/repo dev mojaloop
+
+destroy-moja:
+	helm del --purge kube-dash || echo 'Already deleted'
+	helm del --purge nginx || echo 'Already deleted'
+	helm del --purge dev || echo 'Already deleted'
+	rm -f deploy-moja
 
 deploy:
 	make deploy-kube
@@ -96,7 +101,7 @@ config-all:
 config-set-up:
 	@make env
 	@./mojaloop_config/00_set_up_env.sh
-	@touch config-set-up
+	# @touch config-set-up
 	@echo 'Done!'
 
 config-create-dfsps:
@@ -112,6 +117,10 @@ config-set-lb-ip:
 	@./config/_set_up_lb_ip.sh
 	@make env
 	@touch config-set-lb-ip
+
+
+config-update-ingress:
+	helm upgrade -f ./ingress.values.yml --repo http://mojaloop.io/helm/repo dev mojaloop
 
 
 ##
@@ -139,6 +148,7 @@ helm-fix-permissions:
 	sleep 10
 
 	helm list || echo 'helm list failed. May not be fatal'
+
 	@touch helm-fix-permissions
 
 
