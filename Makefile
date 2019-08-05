@@ -101,7 +101,7 @@ config-all:
 config-set-up:
 	@make env
 	@./mojaloop_config/00_set_up_env.sh
-	# @touch config-set-up
+	@touch config-set-up
 	@echo 'Done!'
 
 config-create-dfsps:
@@ -117,7 +117,6 @@ config-set-lb-ip:
 	@./config/_set_up_lb_ip.sh
 	@make env
 	@touch config-set-lb-ip
-
 
 config-update-ingress:
 	helm upgrade -f ./ingress.values.yml --repo http://mojaloop.io/helm/repo dev mojaloop

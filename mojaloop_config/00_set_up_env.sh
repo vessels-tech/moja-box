@@ -3,6 +3,7 @@
 ##
 # Sets up the necessary environment for the ML Environment
 #
+# TODO: update with latest scripts from devtools
 ##
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

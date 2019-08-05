@@ -2,7 +2,7 @@
 
 ##
 # Sets up the demo DFSPs
-#
+# TODO: update with latest scripts from devtools
 ##
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
