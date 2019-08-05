@@ -1,5 +1,6 @@
 PROJECT = "MOJA-BOX"
 dir = $(shell pwd)
+# include .stage_config
 include ./config/.compiled_env
 env_dir := $(dir)/config
 
@@ -9,7 +10,20 @@ env_dir := $(dir)/config
 ##
 
 env:
-	cat ${env_dir}/mojaloop.public.sh ${env_dir}/mojaloop.private.sh > ${env_dir}/.compiled_env
+	cat ${env_dir}/${stage}.public.sh ${env_dir}/${stage}.private.sh > ${env_dir}/.compiled_env
+
+switch:
+	@echo switching to stage: ${stage}
+	@echo 'export stage=${stage}\n' > .stage_config
+	@make env
+
+switch-local:
+	make switch stage="local"
+	#This might not work here, but we can make sure that make doesn't complete steps
+	@touch deploy-kube deploy-dns config-set-lb-ip
+
+switch-gcp:
+	make switch stage="gcp"
 
 
 ##
@@ -17,7 +31,6 @@ env:
 ##
 deploy-kube:
 	@cd ./terraform && terraform apply -target=module.cluster -target=module.network
-
 
 destroy-kube:
 	@cd ./terraform && terraform destroy -target=module.cluster -target=module.network
@@ -83,11 +96,13 @@ config-all:
 config-set-up:
 	@make env
 	@./mojaloop_config/00_set_up_env.sh
+	@touch config-set-up
 	@echo 'Done!'
 
 config-create-dfsps:
 	@make env
 	@./mojaloop_config/01_create_dfsps.sh
+	@touch config-create-dfsps
 	@echo 'Done!'
 
 # set the correct load balancer ip
@@ -96,6 +111,7 @@ config-create-dfsps:
 config-set-lb-ip:
 	@./config/_set_up_lb_ip.sh
 	@make env
+	@touch config-set-lb-ip
 
 
 ##
@@ -123,6 +139,7 @@ helm-fix-permissions:
 	sleep 10
 
 	helm list || echo 'helm list failed. May not be fatal'
+	@touch helm-fix-permissions
 
 
 print-hosts-settings:
@@ -152,4 +169,4 @@ remove-helm:
 	helm reset --force
 
 
-.PHONY: switch switch-dev swich-prod env
+.PHONY: switch env 

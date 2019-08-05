@@ -1,0 +1,3 @@
+
+
+export CURRENCY="AUD"
