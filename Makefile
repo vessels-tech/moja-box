@@ -85,8 +85,14 @@ deploy-helm:
 deploy-moja:
 	$(info $(cyn)[deploy-moja]$(reset))
 	@echo 'Installing Mojaloop'
-	helm repo add mojaloop http://mojaloop.io/helm/repo/
-	helm install -f ./ingress.values.yml --debug --namespace=mojaloop --name=dev --repo=http://mojaloop.io/helm/repo mojaloop
+	# Remote version - todo control this better
+	# helm repo add mojaloop http://mojaloop.io/helm/repo/
+	# helm install -f ./ingress.values.yml --debug --namespace=mojaloop --name=dev --repo=http://mojaloop.io/helm/repo mojaloop
+
+	# Local version
+	cd ${dir}/../helm && helm install -f ${dir}/ingress.values.yml --debug --namespace=mojaloop --name=dev ./mojaloop
+	cd ${dir}
+
 	helm repo update
 
 	@echo installing Nginx
@@ -121,6 +127,18 @@ deploy:
 	make config-set-lb-ip
 	make deploy-dns
 
+
+##
+# Helm Utils
+## 
+update-moja:
+	$(info $(cyn)[update-moja]$(reset))
+	# Local version - make sure you update the chart first
+	# cd ${dir}/../helm && helm install -f ${dir}/ingress.values.yml --debug --namespace=mojaloop --name=dev ./mojaloop
+	cd ${dir}/../helm && helm upgrade dev ./mojaloop -f ${dir}/ingress.values.yml
+	cd ${dir}
+
+
 ##
 # Configuration
 ##
@@ -152,6 +170,7 @@ config-set-lb-ip:
 
 config-update-ingress:
 	$(info $(cyn)[config-update-ingress]$(reset))
+	$(info $(red)WARN: this may try to override the existing helm deployment if it was installed locally!!!$(reset))
 	helm upgrade -f ./ingress.values.yml --repo http://mojaloop.io/helm/repo dev mojaloop
 
 
