@@ -1,9 +1,23 @@
 PROJECT = "MOJA-BOX"
 dir = $(shell pwd)
+
+red:=$(shell tput setaf 1)
+grn:=$(shell tput setaf 2)
+ylw:=$(shell tput setaf 3)
+blu:=$(shell tput setaf 4)
+cyn:=$(shell tput setaf 5)
+reset:=$(shell tput sgr0)
+
 include .stage_config
 include ./config/.compiled_env
 env_dir := $(dir)/config
 
+
+build:
+	$(info $(cyn)[Building Environment]$(reset))
+	# TODO: Add install etc stuff
+	cd ./terraform && terraform init
+	touch build
 
 ##
 # Env
@@ -30,25 +44,35 @@ switch-gcp:
 # Deployment
 ##
 deploy-kube:
+	$(info $(cyn)[deploy-kube]$(reset))
 	@cd ./terraform && terraform apply -target=module.cluster -target=module.network
 
 	#get the currently running clusters
 	gcloud container clusters list
 	gcloud container clusters get-credentials moja-box-cluster
 
+	@touch deploy-kube
+
 destroy-kube:
 	@cd ./terraform && terraform destroy -target=module.cluster -target=module.network
 
 deploy-dns:
+	$(info $(cyn)[deploy-dns]$(reset))
 	@cd ./terraform && terraform apply -target=module.dns
 
+	@touch deploy-dns
+
 destroy-dns:
+	$(info $(red)[destroy-dns]$(reset))
 	@cd ./terraform && terraform destroy -target=module.dns
+
+	@rm -f deploy-dns
 
 deploy-infra-destroy:
 	@cd ./terraform && terraform destroy
 
 deploy-helm:
+	$(info $(cyn)[deploy-helm]$(reset))
 	#init helm
 	helm init
 
@@ -59,6 +83,7 @@ deploy-helm:
 	@touch deploy-helm
 
 deploy-moja:
+	$(info $(cyn)[deploy-moja]$(reset))
 	@echo 'Installing Mojaloop'
 	helm repo add mojaloop http://mojaloop.io/helm/repo/
 	helm install -f ./ingress.values.yml --debug --namespace=mojaloop --name=dev --repo=http://mojaloop.io/helm/repo mojaloop
@@ -79,17 +104,21 @@ deploy-moja:
 
 
 destroy-moja:
+	$(info $(red)[destroy-moja]$(reset))
 	helm del --purge kube-dash || echo 'Already deleted'
 	helm del --purge nginx || echo 'Already deleted'
 	helm del --purge dev || echo 'Already deleted'
-	rm -f deploy-moja
+
+	@rm -f deploy-moja
 
 deploy:
+	$(info $(cyn)[deploy]$(reset))
+	make build
 	make deploy-kube
 	make deploy-helm
 	make deploy-moja
 	#Load balancer will be live now, we can set up the lb env var
-	@make config-set-lb-ip
+	make config-set-lb-ip
 	make deploy-dns
 
 ##
@@ -99,12 +128,14 @@ config-all:
 	@make config-set-up config-create-dfsps
 
 config-set-up:
+	$(info $(cyn)[config-set-up]$(reset))
 	@make env
 	@./mojaloop_config/00_set_up_env.sh
 	@touch config-set-up
 	@echo 'Done!'
 
 config-create-dfsps:
+	$(info $(cyn)[config-create-dfsps]$(reset))
 	@make env
 	@./mojaloop_config/01_create_dfsps.sh
 	@touch config-create-dfsps
@@ -114,11 +145,13 @@ config-create-dfsps:
 # we rely on a separate script as variable subs
 # in make are hard
 config-set-lb-ip:
+	$(info $(cyn)[config-set-lb-ip]$(reset))
 	@./config/_set_up_lb_ip.sh
 	@make env
 	@touch config-set-lb-ip
 
 config-update-ingress:
+	$(info $(cyn)[config-update-ingress]$(reset))
 	helm upgrade -f ./ingress.values.yml --repo http://mojaloop.io/helm/repo dev mojaloop
 
 
@@ -133,6 +166,7 @@ example-create-transfer:
 # Misc
 ## 
 helm-fix-permissions:
+	$(info $(cyn)[helm-fix-permissions]$(reset))
 	@helm list || echo 'command failed'
 
 	#Give helm the necessary permissions to install stuff on the cluster
@@ -176,6 +210,9 @@ print-lb-ip:
 
 remove-helm:
 	helm reset --force
+
+clean:
+	rm -f config-* deploy-* helm-* build
 
 
 .PHONY: switch env 

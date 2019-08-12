@@ -1,4 +1,7 @@
 .stage_config
+
+#makefile outputs
+build
 deploy-*
 config-*
-helm-fix-permissions
+helm-*
