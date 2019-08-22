@@ -12,9 +12,27 @@ include .stage_config
 include ./config/.compiled_env
 env_dir := $(dir)/config
 
+install:
+	$(info $(cyn)[Installing moja-box dependencies]$(reset))
+	brew install terraform kubernetes-cli kubernetes-helm
+	brew tap caskroom/cask
+	brew cask install google-cloud-sdk
+	echo "TODO: check for ./config/default.json"
+	gcloud components update
+	gcloud auth application-default login
+
+	touch install
 
 build:
 	$(info $(cyn)[Building Environment]$(reset))
+	gcloud config set compute/zone asia-southeast1-a
+	gcloud config set project moja-box
+	cp ./terraform/secrets.auto.tfvars.example ./terraform/secrets.auto.tfvars
+
+	# TODO: set up private envs
+	cat ./config/gcp.private.sh || cp ./config/mojaloop.private.example.sh ./config/gcp.private.sh
+	cat ./config/local.private.sh || cp ./config/mojaloop.private.example.sh ./config/local.private.sh
+	
 	# TODO: Add install etc stuff
 	cd ./terraform && terraform init
 	touch build
