@@ -74,8 +74,7 @@ deploy-kube:
 destroy-kube:
 	@cd ./terraform && terraform destroy -target=module.cluster -target=module.network
 
-	rm -f deploy-dns deploy-helm deploy-moja
-
+	rm -f deploy-dns deploy-helm deploy-moja deploy-kube config-set-lb-ip
 
 deploy-dns:
 	$(info $(cyn)[deploy-dns]$(reset))
@@ -98,6 +97,7 @@ deploy-helm:
 	helm init
 
 	#Fix up permissions for helm to work
+	#TODO: ideally we wouldn't nest commands like this
 	make helm-fix-permissions
 	kubectl -n kube-system get pod | grep tiller
 

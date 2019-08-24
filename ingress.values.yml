@@ -50,6 +50,11 @@ ml-api-adapter:
       hosts:
         api_local: ml-api-adapter.local
         api: ml-api-adapter.moja-box.vessels.tech
+  ml-api-adapter-service-admin:
+    ingress:
+      hosts:
+        api_local: ml-api-adapter-admin.local
+        api: ml-api-adapter-admin.moja-box.vessels.tech
 
 # note - Omitting ml-api-adapter notification handler
 
