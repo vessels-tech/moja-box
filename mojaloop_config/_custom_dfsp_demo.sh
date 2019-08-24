@@ -15,60 +15,54 @@ ALS_HOST=account-lookup-service.moja-box.vessels.tech
 ALS_HOST_ADMIN=account-lookup-service-admin.moja-box.vessels.tech
 SIMULATOR_HOST=simulator.moja-box.vessels.tech
 
-# SIMULATOR_HOST=simulator.moja-box.vessels.tech - cloud kube env
-# SIMULATOR_HOST=localhost:8444 - everything is local env
-# SIMULATOR_HOST=simulator:8444 #- docker env
-# DFSP_HOST_1=host.docker.internal:4000
-# SIMULATOR_HOST=host.docker.internal #switch is running in docker, dfsps are not
+logStep "Creating payerfsp and payeefsp"
 
-# logStep "Creating payerfsp and payeefsp"
+curl -X POST \
+  http://${CENTRAL_LEDGER_HOST}/participants \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "lewbank1",
+	"currency":"'$CURRENCY'"
+}'
 
-# curl -X POST \
-#   http://${CENTRAL_LEDGER_HOST}/participants \
-#   -H 'Cache-Control: no-cache' \
-#   -H 'Content-Type: application/json' \
-#   -d '{
-#     "name": "lewbank1",
-# 	"currency":"'$CURRENCY'"
-# }'
-
-# curl -X POST \
-#   http://${CENTRAL_LEDGER_HOST}/participants/lewbank1/initialPositionAndLimits \
-#   -H 'Content-Type: application/json' \
-#   -d '{
-#     "currency": "'$CURRENCY'",
-#     "limit": {
-#     	"type": "NET_DEBIT_CAP",
-#     	"value": 1000
-#     },
-#     "initialPosition": 100
-#   }'
+curl -X POST \
+  http://${CENTRAL_LEDGER_HOST}/participants/lewbank1/initialPositionAndLimits \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "currency": "'$CURRENCY'",
+    "limit": {
+    	"type": "NET_DEBIT_CAP",
+    	"value": 1000
+    },
+    "initialPosition": 100
+  }'
 
 
-# logStep 'Setting up Simulated endpoints for Transfer'
+logStep 'Setting up Simulated endpoints for Transfer'
 
-# function registerEndpoint {
-#   DFSP=$1
-#   DATA=$2
+function registerEndpoint {
+  DFSP=$1
+  DATA=$2
 
-#   logSubStep "Registering DFSP: ${DFSP} with data: ${DATA}"
-#   curl -X POST \
-#     http://${CENTRAL_LEDGER_HOST}/participants/${DFSP}/endpoints \
-#     -H 'Content-Type: application/json' \
-#     -d "${DATA}"
-# }
+  logSubStep "Registering DFSP: ${DFSP} with data: ${DATA}"
+  curl -X POST \
+    http://${CENTRAL_LEDGER_HOST}/participants/${DFSP}/endpoints \
+    -H 'Content-Type: application/json' \
+    -d "${DATA}"
+}
 
-# registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_PUT\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/participants/{{partyIdType}}/{{partyIdentifier}}\" }"
-# registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_PUT_ERROR\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/participants/{{partyIdType}}/{{partyIdentifier}}/error\" }"
-# registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_BATCH_PUT\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/participants/{{requestId}}\" }"
-# registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_BATCH_PUT_ERROR\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/participants/{{requestId}}/error\" }"
-# registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_GET\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/parties/{{partyIdType}}/{{partyIdentifier}}\" }"
-# registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_PUT\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/parties/{{partyIdType}}/{{partyIdentifier}}\" }"
-# registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_PUT_ERROR\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/parties/{{partyIdType}}/{{partyIdentifier}}/error\" }"
-# registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_QUOTES\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}\" }"
-# registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_POST\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/transfers\" }"
-# registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_PUT\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/payerfstransfers/{{transferId}}\" }"
-# registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_ERROR\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/transfers/{{transferId}}/error\" }"
+registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_PUT\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/participants/{{partyIdType}}/{{partyIdentifier}}\" }"
+registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_PUT_ERROR\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/participants/{{partyIdType}}/{{partyIdentifier}}/error\" }"
+registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_BATCH_PUT\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/participants/{{requestId}}\" }"
+registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_BATCH_PUT_ERROR\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/participants/{{requestId}}/error\" }"
+registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_GET\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/parties/{{partyIdType}}/{{partyIdentifier}}\" }"
+registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_PUT\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/parties/{{partyIdType}}/{{partyIdentifier}}\" }"
+registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_PUT_ERROR\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/parties/{{partyIdType}}/{{partyIdentifier}}/error\" }"
+registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_QUOTES\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}\" }"
+registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_POST\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/transfers\" }"
+registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_PUT\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/payerfstransfers/{{transferId}}\" }"
+registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_ERROR\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/transfers/{{transferId}}/error\" }"
 
 
 logStep 'Setting up the MSIDN Oracle'
