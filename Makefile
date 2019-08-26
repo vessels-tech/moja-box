@@ -12,6 +12,10 @@ include .stage_config
 include ./config/.compiled_env
 env_dir := $(dir)/config
 
+##
+# install - Installs the tool
+# @note: Still a work in progress, expect this to fail
+##
 install:
 	$(info $(cyn)[Installing moja-box dependencies]$(reset))
 	brew install terraform kubernetes-cli kubernetes-helm
@@ -23,6 +27,10 @@ install:
 
 	touch install
 
+##
+# build - builds the gcloud and terraform environments
+# @note: Still a work in progress, expect this to fail
+##
 build:
 	$(info $(cyn)[Building Environment]$(reset))
 	gcloud config set compute/zone asia-southeast1-a
@@ -35,6 +43,9 @@ build:
 	
 	# TODO: Add install etc stuff
 	cd ./terraform && terraform init
+
+	# TODO: add aws check
+
 	touch build
 
 ##
@@ -104,19 +115,22 @@ deploy-moja:
 		--name kube-dash \
   	--set rbac.clusterAdminRole=true,enableSkipLogin=true,enableInsecureLogin=true
 	
+	$(info $(grn)- Waiting for kubernetes to automatically create load balancer$(reset))
+	sleep 20
+
 	@touch deploy-moja
 
 deploy:
 	$(info $(cyn)[deploy]$(reset))
-	build
-	deploy-kube
-	deploy-helm
+	make build 
+	make deploy-kube 
+	make deploy-helm
 	#@ Fix issues with helm permissions on GCP Kube
-	helm-fix-permissions
-	deploy-moja
+	make helm-fix-permissions
+	make deploy-moja
 	#@ Load balancer will be live now, we can set up the lb env var
-	config-set-lb-ip
-	deploy-dns
+	make config-set-lb-ip 
+	make deploy-dns
 
 
 ##
@@ -155,14 +169,14 @@ config-set-up:
 	@make env
 	@./mojaloop_config/00_set_up_env.sh
 	@touch config-set-up
-	@echo 'Done!'
+	$(info $(grn)- Done$(reset))
 
 config-create-dfsps:
 	$(info $(cyn)[config-create-dfsps]$(reset))
 	@make env
 	@./mojaloop_config/01_create_dfsps.sh
 	@touch config-create-dfsps
-	@echo 'Done!'
+	$(info $(grn)- Done$(reset))
 
 # set the correct load balancer ip
 # we rely on a separate script as variable subs
