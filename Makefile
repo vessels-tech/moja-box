@@ -74,7 +74,7 @@ deploy-kube:
 destroy-kube:
 	@cd ./terraform && terraform destroy -target=module.cluster -target=module.network
 
-	rm -f deploy-helm deploy-moja deploy-kube config-set-lb-ip
+	rm -f deploy-helm deploy-moja deploy-kube config-set-lb-ip helm-fix-permissions
 
 deploy-dns:
 	$(info $(cyn)[deploy-dns]$(reset))
@@ -205,7 +205,6 @@ helm-fix-permissions:
 
 	@touch helm-fix-permissions
 
-
 print-hosts-settings:
 	@echo "Make sure your /etc/hosts contains the following:\n"
 	@echo '  ${CLUSTER_IP}	interop-switch.local central-kms.local forensic-logging-sidecar.local central-ledger.local central-end-user-registry.local central-directory.local central-hub.local central-settlement.local ml-api-adapter.local'
@@ -215,8 +214,13 @@ proxy-kube-dash:
 	@kubectl proxy --port 8002
 
 health-check:
+	$(info $(cyn)[health-check]$(reset))
 	@make env
+	$(info $(grn)Checking ingress health$(reset))
 	curl -H Host:'central-ledger.local' http://${CLUSTER_IP}/health
+	@echo ''
+	$(info $(grn)Checking dns health$(reset))
+	curl -H Host:'central-ledger.local' http://moja-box.vessels.tech/health
 
 print-ip:
 	echo 'Warning! This is the cluster endpoint, and not the loadbalancer endpoint!'
