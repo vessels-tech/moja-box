@@ -74,7 +74,7 @@ deploy-kube:
 destroy-kube:
 	@cd ./terraform && terraform destroy -target=module.cluster -target=module.network
 
-	rm -f deploy-dns deploy-helm deploy-moja deploy-kube config-set-lb-ip
+	rm -f deploy-helm deploy-moja deploy-kube config-set-lb-ip
 
 deploy-dns:
 	$(info $(cyn)[deploy-dns]$(reset))
