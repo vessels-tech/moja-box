@@ -10,16 +10,43 @@ source $DIR/../config/.compiled_env
 source $DIR/../config/colors.sh
 
 LEWBANK1_INBOUND_HOST=lewbank1.localtunnel.me
+BASE_HOST=moja-box.vessels.tech
 CENTRAL_LEDGER_HOST=central-ledger.moja-box.vessels.tech
 ALS_HOST=account-lookup-service.moja-box.vessels.tech
 ALS_HOST_ADMIN=account-lookup-service-admin.moja-box.vessels.tech
 SIMULATOR_HOST=simulator.moja-box.vessels.tech
 
-logStep "Creating payerfsp and payeefsp"
+
+logStep "Registering currency"
 
 curl -X POST \
-  http://${CENTRAL_LEDGER_HOST}/participants \
-  -H 'Cache-Control: no-cache' \
+  http://${BASE_HOST}/participants/Hub/accounts -H 'Content-Type: application/json' \
+  -H 'FSPIOP-Source: lewbank1' \
+  -H 'Host: central-ledger.local' \
+  -d '{
+  "type": "HUB_MULTILATERAL_SETTLEMENT",
+  "currency": "'$CURRENCY'"
+}'
+
+logStep 'Add Hub Account-HUB_RECONCILIATION'
+
+curl -X POST \
+  http://${BASE_HOST}/participants/Hub/accounts \
+  -H 'Authorization: Bearer {{BEARER_TOKEN}}' \
+  -H 'Content-Type: application/json' \
+  -H 'FSPIOP-Source: lewbank1' \
+  -H 'Host: central-ledger.local' \
+  -d '{
+  "type": "HUB_RECONCILIATION",
+  "currency": "'$CURRENCY'"
+}'
+
+
+logStep "Creating payerfsp and payeefsp"
+ 
+curl -X POST \
+  http://${BASE_HOST}/participants \
+  -H 'Host: central-ledger.local' \
   -H 'Content-Type: application/json' \
   -d '{
     "name": "lewbank1",
@@ -27,7 +54,8 @@ curl -X POST \
 }'
 
 curl -X POST \
-  http://${CENTRAL_LEDGER_HOST}/participants/lewbank1/initialPositionAndLimits \
+  http://${BASE_HOST}/participants/lewbank1/initialPositionAndLimits \
+  -H 'Host: central-ledger.local' \
   -H 'Content-Type: application/json' \
   -d '{
     "currency": "'$CURRENCY'",
@@ -45,9 +73,10 @@ function registerEndpoint {
   DFSP=$1
   DATA=$2
 
-  logSubStep "Registering DFSP: ${DFSP} with data: ${DATA}"
+  # logSubStep "Registering DFSP: ${DFSP} with data: ${DATA}"
   curl -X POST \
-    http://${CENTRAL_LEDGER_HOST}/participants/${DFSP}/endpoints \
+    http://${BASE_HOST}/participants/${DFSP}/endpoints \
+    -H 'Host: central-ledger.local' \
     -H 'Content-Type: application/json' \
     -d "${DATA}"
 }
@@ -69,9 +98,11 @@ logStep 'Setting up the MSIDN Oracle'
 
 CURRENT_DATE=`date`
 curl -X POST \
-  http://${ALS_HOST_ADMIN}/oracles \
+  http://${BASE_HOST}/oracles \
   -H 'Accept: application/vnd.interoperability.participants+json;version=1' \
+  -H 'Host: account-lookup-service-admin.local' \
   -H 'Content-Type: application/vnd.interoperability.participants+json;version=1.0' \
+  -H 'FSPIOP-Source: lewbank1' \
   -H "Date: ${CURRENT_DATE}" \
   -d '{
   "oracleIdType": "MSISDN",
@@ -93,8 +124,9 @@ function registerParty {
 
   logSubStep "Registering DFSP: ${DFSP} with path: ${MSISN_PATH}"
   curl -X POST \
-    http://${ALS_HOST}/participants/${MSISN_PATH} \
+    http://${BASE_HOST}/participants/${MSISN_PATH} \
     -H 'Content-Type: application/json' \
+    -H 'Host: account-lookup-service.local' \
     -H "Date: ${CURRENT_DATE}" \
     -H "FSPIOP-Source: ${DFSP}" \
     -d '{
@@ -105,3 +137,4 @@ function registerParty {
 
 registerParty lewbank1 "MSISDN/61404404404"
 registerParty lewbank1 "MSISDN/123456789"
+registerParty lewbank1 "MSISDN/987654321"
