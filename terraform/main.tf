@@ -40,6 +40,7 @@ module "dns" {
   source = "./modules/dns"
 
   route_53_zone_id = "${var.route_53_zone_id}"
-  record_name = "${var.record_name}"
+  record_name_base = "${var.record_name_base}"
+  record_name_wild = "${var.record_name_wild}"
   lb_public_ip = "${var.lb_public_ip}"
 }

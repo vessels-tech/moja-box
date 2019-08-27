@@ -14,5 +14,6 @@ variable "cluster_node_machine_type" { default = "n1-standard-4" }
 variable "cluster_node_initial_count" { default = 1 }
 
 variable "route_53_zone_id" { default = "Z1C4RYEBYQ49PR"}
-variable "record_name" { default = "*.moja-box.vessels.tech"}
+variable "record_name_wild" { default = "*.moja-box.vessels.tech"}
+variable "record_name_base" { default = "moja-box.vessels.tech"}
 variable "lb_public_ip" { }
