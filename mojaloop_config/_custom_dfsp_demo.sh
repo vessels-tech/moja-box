@@ -9,7 +9,10 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/../config/.compiled_env
 source $DIR/../config/colors.sh
 
+# TODO: make this config dynamic somehow...
 LEWBANK1_INBOUND_HOST=lewbank1.localtunnel.me
+LEWBANK2_INBOUND_HOST=lewbank2.localtunnel.me
+
 BASE_HOST=moja-box.vessels.tech
 CENTRAL_LEDGER_HOST=central-ledger.moja-box.vessels.tech
 ALS_HOST=account-lookup-service.moja-box.vessels.tech
@@ -66,6 +69,28 @@ curl -X POST \
     "initialPosition": 100
   }'
 
+curl -X POST \
+  http://${BASE_HOST}/participants \
+  -H 'Host: central-ledger.local' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "lewbank2",
+	"currency":"'$CURRENCY'"
+}'
+
+curl -X POST \
+  http://${BASE_HOST}/participants/lewbank2/initialPositionAndLimits \
+  -H 'Host: central-ledger.local' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "currency": "'$CURRENCY'",
+    "limit": {
+    	"type": "NET_DEBIT_CAP",
+    	"value": 1000
+    },
+    "initialPosition": 100
+  }'
+
 
 logStep 'Setting up Simulated endpoints for Transfer'
 
@@ -93,6 +118,18 @@ registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_POST\", \"
 registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_PUT\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/payerfstransfers/{{transferId}}\" }"
 registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_ERROR\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/transfers/{{transferId}}/error\" }"
 
+registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_PUT\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/participants/{{partyIdType}}/{{partyIdentifier}}\" }"
+registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_PUT_ERROR\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/participants/{{partyIdType}}/{{partyIdentifier}}/error\" }"
+registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_BATCH_PUT\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/participants/{{requestId}}\" }"
+registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_BATCH_PUT_ERROR\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/participants/{{requestId}}/error\" }"
+registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_GET\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/parties/{{partyIdType}}/{{partyIdentifier}}\" }"
+registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_PUT\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/parties/{{partyIdType}}/{{partyIdentifier}}\" }"
+registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_PUT_ERROR\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/parties/{{partyIdType}}/{{partyIdentifier}}/error\" }"
+registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_QUOTES\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}\" }"
+registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_POST\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/transfers\" }"
+registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_PUT\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/payerfstransfers/{{transferId}}\" }"
+registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_ERROR\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/transfers/{{transferId}}/error\" }"
+
 
 logStep 'Setting up the MSIDN Oracle'
 
@@ -102,7 +139,6 @@ curl -X POST \
   -H 'Accept: application/vnd.interoperability.participants+json;version=1' \
   -H 'Host: account-lookup-service-admin.local' \
   -H 'Content-Type: application/vnd.interoperability.participants+json;version=1.0' \
-  -H 'FSPIOP-Source: lewbank1' \
   -H "Date: ${CURRENT_DATE}" \
   -d '{
   "oracleIdType": "MSISDN",
@@ -135,6 +171,6 @@ function registerParty {
     }'
 }
 
-registerParty lewbank1 "MSISDN/61404404404"
+# registerParty lewbank1 "MSISDN/61404404404"
 registerParty lewbank1 "MSISDN/123456789"
-registerParty lewbank1 "MSISDN/987654321"
+registerParty lewbank2 "MSISDN/987654321"
