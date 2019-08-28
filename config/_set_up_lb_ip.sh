@@ -12,6 +12,7 @@ fi
 
 echo "Found load balancer ip: ${TF_VAR_lb_public_ip}"
 
-sed -i '' "s/TF_VAR_lb_public_ip=.*$/TF_VAR_lb_public_ip=${TF_VAR_lb_public_ip}/g" ${DIR}/gcp.private.sh
+# TODO: need to add '' after -i on MacOS Mojave for some reason...
+sed -i "s/TF_VAR_lb_public_ip=.*$/TF_VAR_lb_public_ip=${TF_VAR_lb_public_ip}/g" ${DIR}/gcp.private.sh
 #CLUSTER_IP is an old holdover to the manual method of setting the CLUSTER_IP
-sed -i '' "s/CLUSTER_IP=.*$/CLUSTER_IP=${TF_VAR_lb_public_ip}/g" ${DIR}/gcp.private.sh
+sed -i "s/CLUSTER_IP=.*$/CLUSTER_IP=${TF_VAR_lb_public_ip}/g" ${DIR}/gcp.private.sh

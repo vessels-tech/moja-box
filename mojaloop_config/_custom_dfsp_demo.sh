@@ -115,7 +115,7 @@ registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_PUT\", \"va
 registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_PUT_ERROR\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/parties/{{partyIdType}}/{{partyIdentifier}}/error\" }"
 registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_QUOTES\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}\" }"
 registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_POST\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/transfers\" }"
-registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_PUT\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/payerfstransfers/{{transferId}}\" }"
+registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_PUT\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/transfers/{{transferId}}\" }"
 registerEndpoint lewbank1 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_ERROR\", \"value\": \"http://${LEWBANK1_INBOUND_HOST}/transfers/{{transferId}}/error\" }"
 
 registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTICIPANT_PUT\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/participants/{{partyIdType}}/{{partyIdentifier}}\" }"
@@ -127,7 +127,7 @@ registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_PUT\", \"va
 registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_PARTIES_PUT_ERROR\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/parties/{{partyIdType}}/{{partyIdentifier}}/error\" }"
 registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_QUOTES\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}\" }"
 registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_POST\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/transfers\" }"
-registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_PUT\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/payerfstransfers/{{transferId}}\" }"
+registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_PUT\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/transfers/{{transferId}}\" }"
 registerEndpoint lewbank2 "{ \"type\": \"FSPIOP_CALLBACK_URL_TRANSFER_ERROR\", \"value\": \"http://${LEWBANK2_INBOUND_HOST}/transfers/{{transferId}}/error\" }"
 
 

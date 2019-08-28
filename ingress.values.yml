@@ -2,15 +2,15 @@ central:
   centralledger:
     centralledger-service:
       ingress:
-        # Ingress rules are hardcoded in helm for this chart
+        # Ingress rules are hardcoded in helm for this chart, so skip this one for now
         # ref: https://github.com/mojaloop/project/issues/870
         hosts:
-          # api: central-ledger.local
-          # admin: central-ledger.local
-          api_local: central-ledger.local
-          admin_local: central-ledger.local
-          api: central-ledger.moja-box.vessels.tech
-          admin: central-ledger.moja-box.vessels.tech
+          api: central-ledger.local
+          admin: central-ledger.local
+          # api_local: central-ledger.local
+          # admin_local: central-ledger.local
+          # api: central-ledger.moja-box.vessels.tech
+          # admin: central-ledger.moja-box.vessels.tech
 
     # I don't think we should worry just now about all the handlers
     centralledger-handler-transfer-prepare:
