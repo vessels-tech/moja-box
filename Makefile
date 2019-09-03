@@ -220,6 +220,9 @@ helm-fix-permissions:
 	$(info $(grn)- Give helm the necessary permissions to install things on the cluster$(reset))
 	kubectl -n kube-system delete serviceAccounts tiller || echo 'nothing to delete'
 	kubectl -n kube-system delete clusterrolebindings tiller-cluster-rule || echo 'nothing to delete'
+	# maybe this?
+	# kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"wrong-value"}}}}'
+
 	kubectl create serviceaccount --namespace kube-system tiller
 	kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 
