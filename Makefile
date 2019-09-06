@@ -195,7 +195,7 @@ config-create-dfsps:
 # in make are hard
 config-set-lb-ip:
 	$(info $(cyn)[config-set-lb-ip]$(reset))
-	@./config/_set_up_lb_ip.sh
+	@WAIT=true ./config/_set_up_lb_ip.sh
 	@make env
 	@touch config-set-lb-ip
 
