@@ -24,6 +24,7 @@ install:
 	echo "TODO: check for ./config/default.json"
 	gcloud components update
 	gcloud auth application-default login
+	npm install -g newman
 
 	touch install
 

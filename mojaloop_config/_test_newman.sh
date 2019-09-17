@@ -17,8 +17,9 @@ ENVIRONMENT="environments/Mojaloop-Local.postman_environment.json"
 newman -v > /dev/null 2>&1 || logErr 'newman is not installed. Install newman with `npm install -g newman` and try again'
 
 # Run the collection
-
 newman run ${PATH_TO_POSTMAN_REPO}/${COLLECTION} \
   -e ${PATH_TO_POSTMAN_REPO}/${ENVIRONMENT} \
   --delay-request 10 \
-  --bail
+  --bail \
+  --env-var HOST_CENTRAL_LEDGER=central-ledger.moja-box.vessels.tech \
+  --env-var HOST_ML_API=ml-api-adapter.moja-box.vessels.tech
