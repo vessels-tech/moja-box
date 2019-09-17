@@ -184,6 +184,14 @@ config-set-up:
 	@touch config-set-up
 	$(info $(grn)- Done$(reset))
 
+config-set-up-new:
+	$(info $(cyn)[config-set-up-new]$(reset))
+	@make env
+	@./mojaloop_config/_test_newman.sh
+	@touch config-set-up-new
+	$(info $(grn)- Done$(reset))
+
+
 config-create-dfsps:
 	$(info $(cyn)[config-create-dfsps]$(reset))
 	@make env
